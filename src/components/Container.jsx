@@ -19,10 +19,10 @@ const Container = () => {
         {options.map((option) => (
           <label
             key={option.id}
-            className={`relative flex flex-col items-center justify-center w-44 h-32 rounded-xl border-2 cursor-pointer transition-all ${
+            className={`relative p-4 rounded-md border-2 cursor-pointer transition-all ${
               selectedOption === option.id
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 bg-white hover:border-gray-300"
+                ? "border-blue-500"
+                : "border-gray-200 hover:border-gray-300"
             }`}
           >
             <input
@@ -34,20 +34,14 @@ const Container = () => {
               className="absolute opacity-0"
             />
 
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col w-[123px] h-20 items-center justify-center gap-3">
               {option.icon === "card" ? (
                 <IconCreditCardFilled />
               ) : (
                 <IconBrandPaypalFilled />
               )}
 
-              <span
-                className={`text-sm font-medium ${
-                  selectedOption === option.id
-                    ? "text-blue-700"
-                    : "text-gray-700"
-                }`}
-              >
+              <span className={`text-sm leading-3 text-[#020817]`}>
                 {option.label}
               </span>
             </div>

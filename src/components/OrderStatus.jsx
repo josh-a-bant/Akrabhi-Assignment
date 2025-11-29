@@ -3,9 +3,9 @@ import Container from "./Container";
 
 const OrderStatus = () => {
   return (
-    <div className="flex flex-col justify-between gap-10">
-      <div className="border border-dashed rounded-md border-[#E2E8F0] w-[1200px] m-auto mt-6 p-4 flex flex-col gap-2">
-        <h3 className="font-semibold leading-4 text-#71717A">
+    <div className="flex flex-col gap-10">
+      <div className="border border-dashed rounded-md border-[#E2E8F0] w-[1208px] mx-auto mt-6 p-4 flex flex-col gap-2">
+        <h3 className="font-semibold leading-4 text-[#71717A]">
           Service Order Status
         </h3>
 
@@ -24,7 +24,7 @@ const OrderStatus = () => {
           Bill No : <span className="font-bold">FB271181928</span>
         </p>
 
-        <p className="text-[11px] text-[#71717A]">
+        <p className="text-[11px] font-normal text-[#71717A]">
           Created at 23 January 2025 09:94:47 by{" "}
           <span className="font-medium text-[12px]">Abhijeet Das</span>
         </p>

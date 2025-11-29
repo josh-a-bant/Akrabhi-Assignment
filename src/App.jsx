@@ -6,10 +6,10 @@ import OrderStatus from "./components/OrderStatus";
 
 function App() {
   return (
-    <div className="relative h-screen max-w-7xl m-auto border border-gray-100">
+    <div className="relative max-w-7xl m-auto ">
       <Header />
-      {/* <Middle /> */}
-      <OrderStatus />
+      <Middle />
+      {/* <OrderStatus /> */}
       <Footer />
     </div>
   );

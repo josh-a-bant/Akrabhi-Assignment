@@ -1,6 +1,8 @@
+import RegistrationForm from "./RegistrationForm";
+
 const Middle = () => {
   return (
-    <main className="px-6 mt-3h w-full">
+    <main className="p-6 mt-3h w-full">
       {/* Row */}
       <div className="py-2 max-w-md">
         <div className="flex justify-around items-center p-1 bg-[#F1F5F9] text-sm font-medium rounded-lg">
@@ -20,7 +22,9 @@ const Middle = () => {
       </div>
 
       {/* todo */}
-      {/* <div></div> */}
+      <div>
+        <RegistrationForm />
+      </div>
     </main>
   );
 };

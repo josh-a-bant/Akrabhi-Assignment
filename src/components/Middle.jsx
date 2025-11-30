@@ -1,25 +1,11 @@
+import { useState } from "react";
 import RegistrationForm from "./RegistrationForm";
 
 const Middle = () => {
   return (
-    <main className="p-6 mt-3h w-full">
+    <main className="mt-6 w-full px-6 flex flex-col gap-6">
       {/* Row */}
-      <div className="py-2 max-w-md">
-        <div className="flex justify-around items-center p-1 bg-[#F1F5F9] text-sm font-medium rounded-lg">
-          <div className="rounded-sm py-1 px-3 bg-[#FFFFFF] text-[#020817] cursor-pointer">
-            Regular
-          </div>
-          <div className="rounded-sm py-1 px-3 text-[#64748B] cursor-pointer">
-            Quick
-          </div>
-          <div className="rounded-sm py-1 px-3 text-[#64748B] cursor-pointer">
-            Import from ABHA
-          </div>
-          <div className="rounded-sm py-1 px-3 text-[#64748B] cursor-pointer">
-            Scan Documents
-          </div>
-        </div>
-      </div>
+      <Row />
 
       {/* todo */}
       <div>
@@ -29,4 +15,32 @@ const Middle = () => {
   );
 };
 
+const Row = () => {
+  const lists = ["Regural", "Quick", "Import from ABHA", "  Scan Documents"];
+
+  const [select, setSelect] = useState("Regural");
+
+  return (
+    <div className="flex justify-around items-center py-2 w-[472px] bg-[#F1F5F9] text-sm font-medium rounded-lg relative">
+      {lists.map((list) => (
+        <label
+          key={list}
+          className={`rounded-sm py-1 px-3 text-[#020817] cursor-pointer ${
+            select === list ? "bg-[#FFFFFF]" : ""
+          } `}
+        >
+          <input
+            type="radio"
+            name="row-option"
+            value={list}
+            checked={select === list}
+            onChange={(e) => setSelect(e.target.value)}
+            className="absolute opacity-0"
+          />
+          {list}
+        </label>
+      ))}
+    </div>
+  );
+};
 export default Middle;

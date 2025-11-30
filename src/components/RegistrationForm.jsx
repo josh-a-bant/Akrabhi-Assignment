@@ -1,18 +1,41 @@
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+
 import { FormField } from "./FormField";
 import { Buttons } from "./Buttons";
+
 import {
   IconChevronDown,
   IconAdjustmentsHorizontal,
   IconSquareCheck,
   IconTrash,
 } from "@tabler/icons-react";
-import { useState } from "react";
 
 const RegistrationForm = () => {
-  const [toggle, setToggle] = useState(true);
+  const {
+    register,
+    handleSubmit,
+    // watch,
+    control,
+    // formState: { errors },
+  } = useForm();
+
+  const [toggle, setToggle] = useState(false);
+  const [files, setFiles] = useState(["Lorem ipsum dolor sit amet."]);
+  const [gender, setGender] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState("");
+
   const languages = ["Odia", "Hindi", "English"];
   const genders = ["Female", "Male", "Others"];
-  const [files, setFiles] = useState(["Lorem ipsum dolor sit amet."]);
+  const docTypes = ["Aadhar Card", "PAN Card", "Driving Licence", "Passport"];
+
+  const handleSelect = (doc) => {
+    setSelectedDoc(doc);
+    setIsOpen(false);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -28,10 +51,20 @@ const RegistrationForm = () => {
             <FormField
               placeholder={"Enter Mobile Number *"}
               className="w-full"
+              register={register}
+              name={"number"}
             />
             <div className="flex gap-3">
-              <FormField placeholder={"First Name*"} />
-              <FormField placeholder={"Last Name*"} />
+              <FormField
+                placeholder={"First Name*"}
+                register={register}
+                name={"firstName"}
+              />
+              <FormField
+                placeholder={"Last Name*"}
+                register={register}
+                name={"lastName"}
+              />
             </div>
           </div>
 
@@ -44,11 +77,18 @@ const RegistrationForm = () => {
               Gender*
             </label>
 
-            <Gender genders={genders} />
+            <Gender
+              genders={genders}
+              gender={gender}
+              setGender={setGender}
+              register={register}
+              name={"gender"}
+            />
           </div>
 
           {/* age & DOB */}
           <div className="flex items-center gap-4">
+            {/* age */}
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="age"
@@ -59,15 +99,21 @@ const RegistrationForm = () => {
               <div className="flex gap-1">
                 <FormField
                   placeholder={"YY"}
-                  className="w-14 text-center rounded-lg"
+                  className="w-17 text-center rounded-lg"
+                  register={register}
+                  name={"ageYY"}
                 />
                 <FormField
                   placeholder={"MM"}
                   className="w-14 text-center rounded-lg"
+                  register={register}
+                  name={"ageMM"}
                 />
                 <FormField
                   placeholder={"DD"}
                   className="w-14 text-center rounded-lg"
+                  register={register}
+                  name={"ageDD"}
                 />
               </div>
             </div>
@@ -85,15 +131,21 @@ const RegistrationForm = () => {
               <div className="flex gap-1">
                 <FormField
                   placeholder={"YY"}
-                  className="w-14 text-center rounded-lg"
+                  className="w-17 text-center rounded-lg"
+                  register={register}
+                  name={"dobYY"}
                 />
                 <FormField
                   placeholder={"MM"}
                   className="w-14 text-center rounded-lg"
+                  register={register}
+                  name={"dobMM"}
                 />
                 <FormField
                   placeholder={"DD"}
                   className="w-14 text-center rounded-lg"
+                  register={register}
+                  name={"dobDD"}
                 />
               </div>
             </div>
@@ -107,27 +159,87 @@ const RegistrationForm = () => {
         <div className="flex flex-col gap-3 w-full">
           {/* address */}
           <div className="flex justify-between">
-            <FormField placeholder={"Address Line 1*"} className="w-50" />
-            <FormField placeholder={"Address Line 2*"} className="w-50" />
-            <FormField placeholder={"PIN*"} className="w-25" />
-            <FormField placeholder={"Select Area*"} className="w-45" />
-            <FormField placeholder={"City"} className="w-39" />
-            <FormField placeholder={"District*"} className="w-35" />
-            <FormField placeholder={"State*"} className="w-35" />
-            <FormField placeholder={"IN"} className="w-11" />
+            <FormField
+              placeholder={"Address Line 1*"}
+              className="w-50"
+              register={register}
+              name={"add1"}
+            />
+            <FormField
+              placeholder={"Address Line 2*"}
+              className="w-50"
+              register={register}
+              name={"add2"}
+            />
+            <FormField
+              placeholder={"PIN*"}
+              className="w-25"
+              register={register}
+              name={"pin"}
+            />
+            <FormField
+              placeholder={"Select Area*"}
+              className="w-45"
+              register={register}
+              name={"area"}
+            />
+            <FormField
+              placeholder={"City"}
+              className="w-39"
+              register={register}
+              name={"city"}
+            />
+            <FormField
+              placeholder={"District*"}
+              className="w-35"
+              register={register}
+              name={"district"}
+            />
+            <FormField
+              placeholder={"State*"}
+              className="w-35"
+              register={register}
+              name={"state"}
+            />
+            <FormField
+              placeholder={"IN"}
+              className="w-11"
+              register={register}
+              name={"in"}
+            />
           </div>
 
           {/* registation details */}
           <div className="grid grid-cols-3 gap-2">
-            <FormField placeholder={"Primary Registered Number*"} />
-            <FormField placeholder={"Next Kin Contact No. *"} />
-            <FormField placeholder={"Email"} />
+            <FormField
+              placeholder={"Primary Registered Number*"}
+              register={register}
+              name={"regNumber"}
+            />
+            <FormField
+              placeholder={"Next Kin Contact No. *"}
+              register={register}
+              name={"konContact"}
+            />
+            <FormField
+              placeholder={"Email"}
+              register={register}
+              name={"email"}
+            />
           </div>
 
           {/* attendent details */}
           <div className="grid grid-cols-3 gap-2">
-            <FormField placeholder={"Attendant Name"} />
-            <FormField placeholder={"Attendant Relationship"} />
+            <FormField
+              placeholder={"Attendant Name"}
+              register={register}
+              name={"attendantName"}
+            />
+            <FormField
+              placeholder={"Attendant Relationship"}
+              register={register}
+              name={"attedantRel"}
+            />
           </div>
         </div>
       </section>
@@ -138,16 +250,42 @@ const RegistrationForm = () => {
         <div className="flex flex-col gap-4">
           {/* doc upload */}
           <div className="flex items-center justify-between h-9">
-            <div className="flex w-[402px] border border-gray-300/60 rounded-md shadow-sm">
-              <Buttons className="flex items-center justify-center gap-1 py-[9px] border-r border-[#E2E8F0] bg-[#F1F5F9]">
-                Doc Type
-                <IconChevronDown stroke={1} className="w-4" />
-              </Buttons>
+            <div className="flex w-[402px] border border-gray-300/60 rounded-md shadow-sm relative">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center justify-center gap-1 py-[9px] px-2 border-[#E2E8F0] bg-[#F1F5F9]"
+              >
+                <span className="text-sm font-medium text-[#09090B]">
+                  Doc Type
+                </span>
+
+                <IconChevronDown
+                  stroke={1}
+                  className={`w-6 text-gray-600 transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="absolute left-0 top-full w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+                  {docTypes.map((doc, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSelect(doc)}
+                      className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {doc}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <input
-                // placeholder={"TODO: Change it"}
-                className="flex-1 px-4 focus:outline-none"
+                type="text"
+                value={selectedDoc}
                 readOnly
+                className="flex-1 px-4 focus:outline-none"
               />
             </div>
 
@@ -157,6 +295,8 @@ const RegistrationForm = () => {
                   type="file"
                   id="identity-upload"
                   className="hidden"
+                  register={register}
+                  name={"identityProof"}
                 />
                 <label
                   htmlFor="identity-upload"
@@ -172,11 +312,13 @@ const RegistrationForm = () => {
                 <IconAdjustmentsHorizontal stroke={1} className="size-4" />
                 <FormField
                   type="file"
-                  id="identity-upload"
+                  id="address-upload"
                   className="hidden"
+                  register={register}
+                  name={"addressProof"}
                 />
                 <label
-                  htmlFor="identity-upload"
+                  htmlFor="address-upload"
                   className="inline-block text-sm font-medium text-gray-600 bg-white cursor-pointer hover:bg-gray-50 "
                 >
                   Upload Address Proof
@@ -189,9 +331,13 @@ const RegistrationForm = () => {
                 type="checkbox"
                 name="kycVerified"
                 id="kycVerified"
-                className="appearance-none rounded-sm border size-4 border-[#2563EB]"
+                className="rounded-sm border size-4 border-[#2563EB]"
+                {...register("kycVerified")}
               />
-              <label htmlFor="kycVerified" className="text-sm text-[#020817]">
+              <label
+                htmlFor="kycVerified"
+                className="text-sm text-[#020817] cursor-pointer"
+              >
                 KYC Verified
               </label>
             </div>
@@ -233,28 +379,35 @@ const RegistrationForm = () => {
                 Default Communication Language
               </p>
             </div>
-            <DropdownMenu options={languages} />
+            <DropdownMenu
+              options={languages}
+              register={register}
+              name={"language"}
+            />
           </div>
         </div>
       </section>
 
-      <footer className="w-full bg-[#F4F4F5] py-6 px-3.5">
-        <div className="flex items-center justify-between text-sm">
-          <div className="font-semibold leading-4">
-            Registration Charges : 200
-          </div>
-
-          <div className="flex gap-4 leading-5">
-            <button className="bg-[#2563EB] text-[#F8FAFC] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer">
-              Collect Payment & Register
-            </button>
-
-            <button className="bg-[#F1F5F9] text-[#0F172A] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer ">
-              Cancel
-            </button>
-          </div>
+      <div className="flex items-center justify-between text-sm w-full bg-[#F4F4F5] py-6 px-3.5 ">
+        <div className="font-semibold leading-4">
+          Registration Charges : 200
         </div>
-      </footer>
+
+        <div className="flex gap-4 leading-5">
+          <NavLink
+            to="/order-status"
+            className="bg-[#2563EB] text-[#F8FAFC] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer"
+          >
+            Collect Payment & Register
+          </NavLink>
+
+          <button className="bg-[#F1F5F9] text-[#0F172A] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer ">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <DevTool control={control} />
     </div>
   );
 };
@@ -284,12 +437,12 @@ const ToggleSwitch = ({ toggle, setToggle }) => {
   );
 };
 
-const DropdownMenu = ({ options }) => {
+const DropdownMenu = ({ options, register, name }) => {
   return (
     <div className="text-[#020817] px-4 py-2 border rounded-md border-[#E2E8F0]">
-      <select name="language" id="language">
+      <select id="language" {...(register && name ? register(name) : {})}>
         {options.map((option) => (
-          <option value={option} key={option}>
+          <option value={option} key={option} selected={option === "Odia"}>
             {option}
           </option>
         ))}
@@ -298,16 +451,28 @@ const DropdownMenu = ({ options }) => {
   );
 };
 
-const Gender = ({ genders }) => {
+const Gender = ({ genders, name, register, gender, setGender }) => {
   return (
-    <div className="flex rounded-md border max-w-max border-[#E5E7EB]">
-      {genders.map((gender) => (
-        <Buttons
+    <div className="flex rounded-md border max-w-max border-[#E5E7EB] overflow-hidden">
+      {genders.map((item) => (
+        <label
+          key={item}
           type="button"
-          className="border-r-2 text-sm text-[#71717A] font-medium"
+          className={`border-r text-sm text-[#71717A] font-medium cursor-pointer py-1.5 px-3 border-[#E5E7EB] ${
+            gender === item ? "bg-[#F1F5F9]" : ""
+          }`}
         >
-          {gender}
-        </Buttons>
+          <input
+            type="radio"
+            value={item}
+            checked={gender === item}
+            onChange={(e) => setGender(e.target.value)}
+            className="absolute opacity-0"
+            name={name}
+            {...(register && name ? register(name) : {})}
+          />
+          <div>{item}</div>
+        </label>
       ))}
     </div>
   );
@@ -317,7 +482,7 @@ const FileUpload = ({ files }) => {
   return (
     <ul>
       {files.map((file) => (
-        <li className="flex gap-6 items-center py-2">
+        <li key={file} className="flex gap-6 items-center py-2">
           <div className="flex items-center gap-1">
             <span>
               <IconSquareCheck stroke={1} size={16} />

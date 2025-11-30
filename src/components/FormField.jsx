@@ -1,19 +1,49 @@
+// export const FormField = ({
+//   type = "text",
+//   placeholder,
+//   className = "",
+//   register,
+//   name,
+//   ...props
+// }) => {
+//   return (
+//     <input
+//       type={type}
+//       placeholder={placeholder}
+//       className={`border px-3 py-1 rounded-md focus:outline-none focus:border-gray-300 border-[#E2E8F0] shadow-sm placeholder:text-[#64748B] placeholder:text-sm ${className}`}
+//       name={name}
+//       {...(register && name ? register(name) : {})}
+//       {...props}
+//     />
+//   );
+// };
+
 export const FormField = ({
   type = "text",
   placeholder,
   className = "",
-  register,
   name,
+  value,
+  onChange,
+  error,
   ...props
 }) => {
   return (
-    <input
-      type={type}
-      placeholder={placeholder}
-      className={`border px-3 py-1 rounded-md focus:outline-none focus:border-gray-300 border-[#E2E8F0] shadow-sm placeholder:text-[#64748B] placeholder:text-sm ${className}`}
-      name={name}
-      {...(register && name ? register(name) : {})}
-      {...props}
-    />
+    <div className="flex flex-col gap-1">
+      <input
+        type={type}
+        placeholder={placeholder}
+        name={name}
+        value={value}
+        onChange={onChange}
+        className={`border px-3 py-1 rounded-md focus:outline-none shadow-sm placeholder:text-[#64748B] placeholder:text-sm ${
+          error
+            ? "border-red-500 focus:border-red-500"
+            : "border-[#E2E8F0] focus:border-gray-300"
+        } ${className}`}
+        {...props}
+      />
+      {error && <span className="text-red-500 text-xs mt-0.5">{error}</span>}
+    </div>
   );
 };

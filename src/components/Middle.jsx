@@ -3,14 +3,11 @@ import RegistrationForm from "./RegistrationForm";
 
 const Middle = () => {
   return (
-    <main className="mt-6 w-full px-6 flex flex-col gap-6">
+    <main className="mt-6 w-full flex flex-col gap-6">
       {/* Row */}
       <Row />
 
-      {/* todo */}
-      <div>
-        <RegistrationForm />
-      </div>
+      <RegistrationForm />
     </main>
   );
 };
@@ -21,7 +18,7 @@ const Row = () => {
   const [select, setSelect] = useState("Regural");
 
   return (
-    <div className="flex justify-around items-center py-2 w-[472px] bg-[#F1F5F9] text-sm font-medium rounded-lg relative">
+    <div className="flex justify-around items-center py-2 mx-6 w-[472px] bg-[#F1F5F9] text-sm font-medium rounded-lg relative">
       {lists.map((list) => (
         <label
           key={list}

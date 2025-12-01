@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
 import Middle from "./components/Middle";
-import OrderStatus from "./components/OrderStatus";
+import SuccessScreen from "./components/SuccessScreen";
 import PageNotFound from "./components/PageNotFound";
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Middle />}></Route>
-        <Route path="/order-status" element={<OrderStatus />}></Route>
+        {/* <Route path="/success-screen" element={<SuccessScreen />}></Route> */}
         <Route path="*" element={<PageNotFound />}></Route>
       </Routes>
     </div>

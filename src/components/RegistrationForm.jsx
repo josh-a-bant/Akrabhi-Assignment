@@ -1,36 +1,162 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
+// import { DevTool } from "@hookform/devtools";
 
 import { FormField } from "./FormField";
 import { Buttons } from "./Buttons";
+import SuccessScreen from "./SuccessScreen";
 
 import {
   IconChevronDown,
   IconAdjustmentsHorizontal,
   IconSquareCheck,
   IconTrash,
+  IconCamera,
 } from "@tabler/icons-react";
 
 const RegistrationForm = () => {
   const {
     register,
     handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm();
+    reset,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
 
   const [toggle, setToggle] = useState(false);
-  const [files, setFiles] = useState(["Lorem ipsum dolor sit amet."]);
   const [gender, setGender] = useState("Male");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState("");
+  const [identityFile, setIdentityFile] = useState(null);
+  const [addressFile, setAddressFile] = useState(null);
+
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [registrationData, setRegistrationData] = useState(null);
+
+  const identityInputRef = useRef(null);
+  const addressInputRef = useRef(null);
 
   const languages = ["Odia", "Hindi", "English"];
   const genders = ["Female", "Male", "Others"];
   const docTypes = ["Aadhar Card", "PAN Card", "Driving Licence", "Passport"];
 
-  const onSubmit = (data) => console.log(data, gender, selectedDoc);
+  const generateUHID = useCallback(() => {
+    return `IIGH-${Math.floor(1000000 + Math.random() * 9000000)}`;
+  }, []);
+
+  const generateBillNo = useCallback(() => {
+    return `FB${Math.floor(100000000 + Math.random() * 900000000)}`;
+  }, []);
+
+  const generateTransactionRef = useCallback(() => {
+    return `#${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+  }, []);
+
+  const isIdProofUploaded = identityFile !== null || addressFile !== null;
+  const canSubmit = isValid && gender && isIdProofUploaded;
+
+  const onSubmit = (data) => {
+    if (!canSubmit) return;
+
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    const formattedTime = now.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    const registrationInfo = {
+      uhid: generateUHID(),
+      billNo: generateBillNo(),
+      transactionRef: generateTransactionRef(),
+      createdAt: `${formattedDate} ${formattedTime}`,
+      createdBy: "Jashobanta Besra",
+      formData: {
+        ...data,
+        gender,
+        selectedDoc,
+        identityFile: identityFile?.name,
+        addressFile: addressFile?.name,
+        consentForResearch: toggle,
+      },
+    };
+
+    setRegistrationData(registrationInfo);
+    setIsSubmitted(true);
+  };
+
+  const handleNewRegistration = () => {
+    setIsSubmitted(false);
+    setRegistrationData(null);
+    setIdentityFile(null);
+    setAddressFile(null);
+    setGender("Male");
+    setSelectedDoc("");
+    setToggle(false);
+    reset();
+  };
+
+  if (isSubmitted && registrationData) {
+    return <SuccessScreen registrationData={registrationData} />;
+  }
+
+  const handleIdentityFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const fileType = file.type;
+
+      if (
+        fileType === "image/jpeg" ||
+        fileType === "image/jpg" ||
+        fileType === "image/png" ||
+        fileType === "application/pdf"
+      ) {
+        setIdentityFile(file);
+      } else {
+        alert("Please upload only JPG or PDF files");
+        event.target.value = "";
+      }
+    }
+  };
+
+  const handleAddressFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const fileType = file.type;
+
+      if (
+        fileType === "image/jpeg" ||
+        fileType === "image/jpg" ||
+        fileType === "image/png" ||
+        fileType === "application/pdf"
+      ) {
+        setAddressFile(file);
+      } else {
+        alert("Please upload only JPG or PDF files");
+        event.target.value = "";
+      }
+    }
+  };
+
+  const removeIdentityFile = () => {
+    setIdentityFile(null);
+    if (identityInputRef.current) {
+      identityInputRef.current.value = "";
+    }
+  };
+
+  const removeAddressFile = () => {
+    setAddressFile(null);
+    if (addressInputRef.current) {
+      addressInputRef.current.value = "";
+    }
+  };
 
   return (
     <form
@@ -44,7 +170,30 @@ const RegistrationForm = () => {
           <SubHeading>Identification Details</SubHeading>
           <div className="flex w-full items-center justify-between">
             {/* TODO: Add Photo */}
-            {/* <div></div> */}
+            <label
+              className="relative w-[72px] h-[72px] cursor-pointer"
+              htmlFor="profile"
+            >
+              {/* Circular container with image */}
+              <div className="w-full h-full rounded-full overflow-hidden shadow-lg">
+                <img
+                  src="image.jpg"
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Camera icon button */}
+              <button
+                type="button"
+                className="absolute w-8 h-4 left-5 bottom-0 flex justify-center items-center bg-[#E2E8F0] rounded-md p-2"
+              >
+                <IconCamera stroke={1} />
+              </button>
+              <input type="file" className="hidden" id="profile" />
+
+              {/* Hidden file input */}
+            </label>
 
             {/* contact */}
             <div className="flex flex-col gap-3">
@@ -53,21 +202,19 @@ const RegistrationForm = () => {
                 className="w-full"
                 name="number"
                 {...register("number", {
-                  
                   required: "Mobile number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: "Please enter a valid 10-digit mobile number",
                   },
                 })}
-                error={errors.number?.message} 
+                error={errors.number?.message}
               />
               <div className="flex gap-3">
                 <FormField
                   placeholder="First Name*"
                   name="firstName"
                   {...register("firstName", {
-                    
                     required: "First name is required",
                     pattern: {
                       value: /^[A-Za-z]{2,}$/,
@@ -75,13 +222,12 @@ const RegistrationForm = () => {
                         "First name must contain only alphabets (min. 2 characters)",
                     },
                   })}
-                  error={errors.firstName?.message} 
+                  error={errors.firstName?.message}
                 />
                 <FormField
                   placeholder="Last Name*"
                   name="lastName"
                   {...register("lastName", {
-                   
                     required: "Last name is required",
                     pattern: {
                       value: /^[A-Za-z]{2,}$/,
@@ -89,7 +235,7 @@ const RegistrationForm = () => {
                         "Last name must contain only alphabets (min. 2 characters)",
                     },
                   })}
-                  error={errors.lastName?.message} 
+                  error={errors.lastName?.message}
                 />
               </div>
             </div>
@@ -104,7 +250,7 @@ const RegistrationForm = () => {
               </label>
 
               <Gender genders={genders} gender={gender} setGender={setGender} />
-              {!gender && ( 
+              {!gender && (
                 <span className="text-red-500 text-xs">Gender is required</span>
               )}
             </div>
@@ -122,10 +268,9 @@ const RegistrationForm = () => {
                 <div className="flex gap-1">
                   <FormField
                     placeholder="YY"
-                    className="w-16 text-center rounded-lg" 
+                    className="w-16 text-center rounded-lg"
                     name="ageYY"
                     {...register("ageYY", {
-                     
                       pattern: {
                         value: /^[0-9]{1,3}$/,
                         message: "Invalid",
@@ -136,14 +281,13 @@ const RegistrationForm = () => {
                         return (num >= 0 && num <= 120) || "Age must be 0-120";
                       },
                     })}
-                    error={errors.ageYY?.message} 
+                    error={errors.ageYY?.message}
                   />
                   <FormField
                     placeholder="MM"
                     className="w-14 text-center rounded-lg"
                     name="ageMM"
                     {...register("ageMM", {
-                      
                       pattern: {
                         value: /^[0-9]{1,2}$/,
                         message: "Invalid",
@@ -154,14 +298,13 @@ const RegistrationForm = () => {
                         return (num >= 0 && num <= 11) || "0-11 months";
                       },
                     })}
-                    error={errors.ageMM?.message} 
+                    error={errors.ageMM?.message}
                   />
                   <FormField
                     placeholder="DD"
                     className="w-14 text-center rounded-lg"
                     name="ageDD"
                     {...register("ageDD", {
-                      
                       pattern: {
                         value: /^[0-9]{1,2}$/,
                         message: "Invalid",
@@ -172,7 +315,7 @@ const RegistrationForm = () => {
                         return (num >= 0 && num <= 30) || "0-30 days";
                       },
                     })}
-                    error={errors.ageDD?.message} 
+                    error={errors.ageDD?.message}
                   />
                 </div>
               </div>
@@ -190,42 +333,39 @@ const RegistrationForm = () => {
                 <div className="flex gap-1">
                   <FormField
                     placeholder="YY"
-                    className="w-16 text-center rounded-lg" 
+                    className="w-16 text-center rounded-lg"
                     name="dobYY"
                     {...register("dobYY", {
-                     
                       pattern: {
-                        value: /^[0-9]{2}$/,
+                        value: /^[0-9]{4}$/,
                         message: "YY",
                       },
                     })}
-                    error={errors.dobYY?.message} 
+                    error={errors.dobYY?.message}
                   />
                   <FormField
                     placeholder="MM"
                     className="w-14 text-center rounded-lg"
                     name="dobMM"
                     {...register("dobMM", {
-                      
                       pattern: {
                         value: /^(0?[1-9]|1[0-2])$/,
                         message: "1-12",
                       },
                     })}
-                    error={errors.dobMM?.message} 
+                    error={errors.dobMM?.message}
                   />
                   <FormField
                     placeholder="DD"
                     className="w-14 text-center rounded-lg"
                     name="dobDD"
                     {...register("dobDD", {
-                     
                       pattern: {
                         value: /^(0?[1-9]|[12][0-9]|3[01])$/,
                         message: "1-31",
                       },
                     })}
-                    error={errors.dobDD?.message} 
+                    error={errors.dobDD?.message}
                   />
                 </div>
               </div>
@@ -244,78 +384,72 @@ const RegistrationForm = () => {
                 className="w-50"
                 name="add1"
                 {...register("add1", {
-                  
                   required: "Address line 1 is required",
                 })}
-                error={errors.add1?.message} 
+                error={errors.add1?.message}
               />
               <FormField
                 placeholder="Address Line 2*"
                 className="w-50"
                 name="add2"
                 {...register("add2", {
-                  
                   required: "Address line 2 is required",
                 })}
-                error={errors.add2?.message} 
+                error={errors.add2?.message}
               />
               <FormField
                 placeholder="PIN*"
                 className="w-25"
                 name="pin"
                 {...register("pin", {
-                  
                   required: "PIN is required",
                   pattern: {
                     value: /^[0-9]{6}$/,
                     message: "PIN must be 6 digits",
                   },
                 })}
-                error={errors.pin?.message} 
+                error={errors.pin?.message}
               />
               <FormField
                 placeholder="Select Area*"
                 className="w-45"
                 name="area"
                 {...register("area", {
-                  
                   required: "Area is required",
                 })}
-                error={errors.area?.message} 
+                error={errors.area?.message}
               />
               <FormField
                 placeholder="City"
                 className="w-39"
                 name="city"
-                {...register("city")} 
-                error={errors.city?.message} 
+                {...register("city")}
+                error={errors.city?.message}
               />
               <FormField
                 placeholder="District*"
                 className="w-35"
                 name="district"
                 {...register("district", {
-                  
                   required: "District is required",
                 })}
-                error={errors.district?.message} 
+                error={errors.district?.message}
               />
               <FormField
                 placeholder="State*"
                 className="w-35"
                 name="state"
                 {...register("state", {
-                  
                   required: "State is required",
                 })}
-                error={errors.state?.message} 
+                error={errors.state?.message}
               />
               <FormField
                 placeholder="IN"
                 className="w-11"
                 name="in"
-                {...register("in")} 
-                error={errors.in?.message} 
+                {...register("in")}
+                error={errors.in?.message}
               />
             </div>
 
@@ -325,39 +459,36 @@ const RegistrationForm = () => {
                 placeholder="Primary Registered Number*"
                 name="regNumber"
                 {...register("regNumber", {
-                  
                   required: "Primary registered number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: "Please enter a valid 10-digit number",
                   },
                 })}
-                error={errors.regNumber?.message} 
+                error={errors.regNumber?.message}
               />
               <FormField
                 placeholder="Next Kin Contact No. *"
                 name="kinContact"
                 {...register("kinContact", {
-                  
                   required: "Next kin contact is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
                     message: "Please enter a valid 10-digit number",
                   },
                 })}
-                error={errors.kinContact?.message} 
+                error={errors.kinContact?.message}
               />
               <FormField
                 placeholder="Email"
                 name="email"
                 {...register("email", {
-                  
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: "Invalid email address",
                   },
                 })}
-                error={errors.email?.message} 
+                error={errors.email?.message}
               />
             </div>
 
@@ -366,13 +497,13 @@ const RegistrationForm = () => {
               <FormField
                 placeholder="Attendant Name"
                 name="attendantName"
-                {...register("attendantName")} 
-                error={errors.attendantName?.message} 
+                {...register("attendantName")}
+                error={errors.attendantName?.message}
               />
               <FormField
                 placeholder="Attendant Relationship"
                 name="attendantRel"
-                {...register("attendantRel")} 
+                {...register("attendantRel")}
                 error={errors.attendantRel?.message}
               />
             </div>
@@ -432,10 +563,12 @@ const RegistrationForm = () => {
               <div>
                 <div className="relative">
                   <input
+                    ref={identityInputRef}
                     type="file"
                     id="identity-upload"
                     className="hidden"
-                    {...register("identityProof")} 
+                    accept=".jpg,.jpeg,.pdf,.png"
+                    onChange={handleIdentityFileChange}
                   />
                   <label
                     htmlFor="identity-upload"
@@ -450,10 +583,12 @@ const RegistrationForm = () => {
                 <Buttons className="relative flex items-center border gap-2 rounded-md py-2 px-4">
                   <IconAdjustmentsHorizontal stroke={1} className="size-4" />
                   <input
+                    ref={addressInputRef}
                     type="file"
                     id="address-upload"
                     className="hidden"
-                    {...register("addressProof")} 
+                    accept=".jpg,.jpeg,.pdf,.png"
+                    onChange={handleAddressFileChange}
                   />
                   <label
                     htmlFor="address-upload"
@@ -483,7 +618,12 @@ const RegistrationForm = () => {
 
             {/* upload successfull */}
             <div className="w-fit">
-              <FileUpload files={files} />
+              <FileUpload
+                identityFile={identityFile}
+                addressFile={addressFile}
+                removeIdentityFile={removeIdentityFile}
+                removeAddressFile={removeAddressFile}
+              />
             </div>
           </div>
         </section>
@@ -491,7 +631,6 @@ const RegistrationForm = () => {
         {/* preferance */}
         <section className="flex flex-col gap-4">
           <SubHeading>Preferences</SubHeading>
-
           <div className="flex gap-7">
             <div className="flex gap-2 items-center w-[360px]">
               <div className="flex flex-col gap-1">
@@ -535,13 +674,23 @@ const RegistrationForm = () => {
         <div className="flex gap-4 leading-5">
           <input
             type="submit"
-            // to="/order-status"
             value={"Collect Payment & Register"}
-            className="bg-[#2563EB] text-[#F8FAFC] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer"
+            disabled={!canSubmit}
+            className={`py-2 px-4 rounded-md shadow-sm font-medium transition-all ${
+              canSubmit
+                ? "bg-[#2563EB] text-[#F8FAFC] hover:bg-[#1d4ed8] cursor-pointer"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            title={
+              !canSubmit
+                ? "Please complete all required fields and upload at least one ID proof"
+                : ""
+            }
           />
 
           <button
             type="button"
+            onClick={handleNewRegistration}
             className="bg-[#F1F5F9] text-[#0F172A] py-2 px-4 rounded-md shadow-sm font-medium cursor-pointer "
           >
             Cancel
@@ -549,7 +698,7 @@ const RegistrationForm = () => {
         </div>
       </div>
 
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </form>
   );
 };
@@ -618,24 +767,46 @@ const Gender = ({ genders, gender, setGender }) => {
   );
 };
 
-const FileUpload = ({ files }) => {
+const FileUpload = ({
+  identityFile,
+  addressFile,
+  removeIdentityFile,
+  removeAddressFile,
+}) => {
   return (
-    <ul>
-      {files.map((file) => (
-        <li key={file} className="flex gap-6 items-center py-2">
-          <div className="flex items-center gap-1">
-            <span>
-              <IconSquareCheck stroke={1} size={16} />
-            </span>
-            <p className="text-[Blue] text-sm">
-              {file}
-              <span className="text-[#1B1F26B8]">Uploaded Successfully</span>
-            </p>
-          </div>
-          <IconTrash stroke={1} size={16} className="cursor-pointer" />
-        </li>
-      ))}
-    </ul>
+    <div className="flex flex-col gap-2">
+      {identityFile && (
+        <div className="flex items-center gap-3 py-2">
+          <IconSquareCheck stroke={1} size={16} className="text-blue-600" />
+          <p className="text-sm flex-1">
+            <span className="text-blue-600">{identityFile.name}</span>
+            <span className="text-gray-500"> Uploaded Successfully</span>
+          </p>
+          <IconTrash
+            stroke={1}
+            size={16}
+            className="cursor-pointer text-gray-400 hover:text-red-500"
+            onClick={removeIdentityFile}
+          />
+        </div>
+      )}
+
+      {addressFile && (
+        <div className="flex items-center gap-3 py-2">
+          <IconSquareCheck stroke={1} size={16} className="text-blue-600" />
+          <p className="text-sm flex-1">
+            <span className="text-blue-600">{addressFile.name}</span>
+            <span className="text-gray-500"> Uploaded Successfully</span>
+          </p>
+          <IconTrash
+            stroke={1}
+            size={16}
+            className="cursor-pointer text-gray-400 hover:text-red-500"
+            onClick={removeAddressFile}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -4,7 +4,6 @@ import RegistrationForm from "./RegistrationForm";
 const Middle = () => {
   return (
     <main className="mt-6 w-full flex flex-col gap-6">
-      {/* Row */}
       <Row />
 
       <RegistrationForm />

@@ -19,8 +19,8 @@ const RegistrationForm = () => {
     register,
     handleSubmit,
     reset,
-    watch, // ⬅️ ADD THIS
-    setValue, // ⬅️ ADD THIS
+    watch, 
+    setValue, 
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
   const isUpdatingRef = useRef(false);

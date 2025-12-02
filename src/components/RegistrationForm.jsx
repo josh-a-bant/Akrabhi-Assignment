@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 // import { DevTool } from "@hookform/devtools";
 
@@ -19,8 +19,11 @@ const RegistrationForm = () => {
     register,
     handleSubmit,
     reset,
+    watch, // ⬅️ ADD THIS
+    setValue, // ⬅️ ADD THIS
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
+  const isUpdatingRef = useRef(false);
 
   const [toggle, setToggle] = useState(false);
   const [gender, setGender] = useState("Male");
@@ -38,6 +41,56 @@ const RegistrationForm = () => {
   const languages = ["Odia", "Hindi", "English"];
   const genders = ["Female", "Male", "Others"];
   const docTypes = ["Aadhar Card", "PAN Card", "Driving Licence", "Passport"];
+
+  const dobYY = watch("dobYY");
+  const dobMM = watch("dobMM");
+  const dobDD = watch("dobDD");
+
+  useEffect(() => {
+    if (isUpdatingRef.current) return;
+
+    if (dobYY && dobMM && dobDD) {
+      const year = parseInt(dobYY);
+      const month = parseInt(dobMM);
+      const day = parseInt(dobDD);
+
+      if (
+        year >= 1900 &&
+        year <= new Date().getFullYear() &&
+        month >= 1 &&
+        month <= 12 &&
+        day >= 1 &&
+        day <= 31
+      ) {
+        isUpdatingRef.current = true;
+
+        const birthDate = new Date(year, month - 1, day);
+        const today = new Date();
+
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+
+        if (days < 0) {
+          months--;
+          days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        }
+
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        setValue("ageYY", String(years).padStart(2, "0"));
+        setValue("ageMM", String(months).padStart(2, "0"));
+        setValue("ageDD", String(days).padStart(2, "0"));
+
+        setTimeout(() => {
+          isUpdatingRef.current = false;
+        }, 100);
+      }
+    }
+  }, [dobYY, dobMM, dobDD, setValue]);
 
   const generateUHID = useCallback(() => {
     return `IIGH-${Math.floor(1000000 + Math.random() * 9000000)}`;

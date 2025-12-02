@@ -1,16 +1,57 @@
-# React + Vite
+# 🏥 Akrabhi Patient Registration – Frontend Assignment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean, responsive, and fully validated React-based Patient Registration Form built as part of a frontend hiring assignment.  
+Includes pixel-perfect UI, reusable components, and strong form validation using React Hook Form.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo  
+🔗 **https://akrabhi-patient-registration.vercel.app/**
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🧰 Tech Stack
 
-## Expanding the ESLint configuration
+- **React (Functional Components + Hooks)**
+- **React Hook Form**
+- **Regex-based Validation**
+- **Tailwind CSS**
+- **Vite**
+- **React Router**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 📝 Project Overview
+
+This assignment includes two main screens:
+
+### **1️⃣ Patient Registration Form**
+- Pixel-perfect UI based on the provided Figma  
+- Fully responsive layout using CSS Grid & Flexbox  
+- Real-time validation using React Hook Form  
+- Regex validation for mobile, PIN code, email, and name fields  
+- Clean and reusable components (`FormField`, `Buttons`, `SubHeading`)  
+- Proper grouping of form elements for readability  
+
+### **2️⃣ Registration Success Screen**
+- Displays details like UHID, Bill Number, timestamp  
+- Matches the Figma mockup  
+- Includes action buttons (View Profile, Print Receipt, Print UHID, etc.)  
+- Clean success message layout with clear visual feedback  
+
+---
+
+## ⚙️ How to Run Locally
+
+```bash
+# Clone the project
+git clone https://github.com/josh-a-bant/Akrabhi-Assignment.git
+
+# Navigate to project folder
+cd Akrabhi-Assignment
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
